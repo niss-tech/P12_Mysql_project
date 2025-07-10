@@ -3,7 +3,10 @@ from views.logout import logout_cli
 from views.create_user import create_user_cli
 from views.create_client import create_client_cli
 from views.list_clients import list_clients_cli
+from views.create_contract import create_contract_cli
+from views.update_contract import update_contract_cli
 from utils.session_user import get_current_user
+
 
 # TODO: importer les autres vues au fur et à mesure
 
@@ -45,8 +48,8 @@ def menu():
             actions.update({
                 "1": ("Créer un client", create_client_cli),
                 "2": ("Modifier mes clients", lambda: print("[TODO modifier mes clients]")),
-                "3": ("Créer un contrat", lambda: print("[TODO créer contrat]")),
-                "4": ("Modifier mes contrats", lambda: print("[TODO modifier contrats]")),
+                "3": ("Créer un contrat", create_contract_cli),
+                "4": ("Modifier un contrat", update_contract_cli),
                 "5": ("Créer un événement (client avec contrat signé)", lambda: print("[TODO créer événement]")),
                 "6": ("Voir tous les clients / contrats / événements", lambda: print("[TODO affichage général]")),
             })
