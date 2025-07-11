@@ -7,6 +7,8 @@ from views.create_contract import create_contract_cli
 from views.update_contract import update_contract_cli
 from views.list_contracts import list_contracts_cli, list_my_contracts_cli
 from utils.session_user import get_current_user
+from views.update_user import update_user_cli
+from views.delete_user import delete_user_cli
 
 
 def afficher_menu(titre, actions):
@@ -84,8 +86,8 @@ def menu():
 def menu_utilisateur():
     actions = {
         "1": ("Créer un utilisateur", create_user_cli),
-        "2": ("Modifier un utilisateur", lambda: print("[TODO modifier utilisateur]")),
-        "3": ("Supprimer un utilisateur", lambda: print("[TODO supprimer utilisateur]")),
+        "2": ("Modifier un utilisateur", update_user_cli),
+        "3": ("Supprimer un utilisateur", delete_user_cli),
         "0": ("Retour", lambda: None)
     }
     afficher_menu("GESTION DES UTILISATEURS", actions)
