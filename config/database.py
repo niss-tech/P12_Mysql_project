@@ -19,4 +19,4 @@ DB_NAME = os.getenv("DB_NAME")
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 # Création de l'objet engine (connexion à la base)
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)

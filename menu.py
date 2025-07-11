@@ -2,73 +2,111 @@ from views.login import login_cli
 from views.logout import logout_cli
 from views.create_user import create_user_cli
 from views.create_client import create_client_cli
-from views.list_clients import list_clients_cli
+from views.list_clients import list_clients_cli, list_my_clients_cli
 from views.create_contract import create_contract_cli
 from views.update_contract import update_contract_cli
+from views.list_contracts import list_contracts_cli, list_my_contracts_cli
 from utils.session_user import get_current_user
 
 
-# TODO: importer les autres vues au fur et à mesure
+def afficher_menu(titre, actions):
+    while True:
+        print(f"\n--- {titre} ---")
+        for key, (desc, _) in actions.items():
+            print(f"{key}. {desc}")
+        choix = input("Choix : ")
+        action = actions.get(choix)
+        if action:
+            action[1]()  # exécute la fonction associée
+            return choix  # retourne le choix pour que menu() puisse réagir
+        else:
+            print("Choix invalide.")
+
 
 def menu():
     while True:
         user = get_current_user()
 
         if not user:
-            print("1. Connexion")
-            print("0. Quitter")
-            choix = input("Choix : ")
+            actions = {
+                "1": ("Connexion", login_cli),
+                "0": ("Quitter", lambda: exit())
+            }
+            choix = afficher_menu("MENU NON CONNECTÉ", actions)
 
+            #si l'utilisateur vient de se connecter, on relance la boucle
             if choix == "1":
-                login_cli()
+                continue
             elif choix == "0":
-                print(" À bientôt !")
                 break
-            else:
-                print(" Choix invalide.")
-            continue
 
-        print(f"\n Connecté : {user['first_name']} ({user['department']})")
-
+        # Si connecté :
+        print(f"\nConnecté : {user['first_name']} ({user['department']})")
         department = user["department"]
-        actions = {"0": ("Déconnexion", logout_cli)}  # commun à tous
+
+        actions = {
+            "0": ("Déconnexion", logout_cli)
+        }
 
         if department == "gestion":
             actions.update({
-                "1": ("Créer un utilisateur", lambda: print("[TODO créer utilisateur]")),
-                "2": ("Modifier un utilisateur", lambda: print("[TODO modifier utilisateur]")),
-                "3": ("Supprimer un utilisateur", lambda: print("[TODO supprimer utilisateur]")),
-                "4": ("Voir tous les clients", list_clients_cli),
-                "5": ("Créer / Modifier un contrat", lambda: print("[TODO contrat gestion]")),
-                "6": ("Voir tous les événements", lambda: print("[TODO voir tous événements]")),
-                "7": ("Associer un support à un événement", lambda: print("[TODO associer support]")),
+                "1": ("Gérer les utilisateurs", menu_utilisateur),
+                "2": ("Gérer les contrats", lambda: menu_contrat(user, can_create=True)),
+                "3": ("Accéder aux ressources", menu_lecture),
+                "4": ("Associer un support à un événement", lambda: print("[TODO associer support]")),
             })
 
         elif department == "commercial":
             actions.update({
                 "1": ("Créer un client", create_client_cli),
                 "2": ("Modifier mes clients", lambda: print("[TODO modifier mes clients]")),
-                "3": ("Créer un contrat", create_contract_cli),
-                "4": ("Modifier un contrat", update_contract_cli),
-                "5": ("Créer un événement (client avec contrat signé)", lambda: print("[TODO créer événement]")),
-                "6": ("Voir tous les clients / contrats / événements", lambda: print("[TODO affichage général]")),
+                "3": ("Voir mes clients", list_my_clients_cli),
+                "4": ("Mettre à jour mes contrats", lambda: menu_contrat(user, can_create=False)),
+                "5": ("Créer un événement", lambda: print("[TODO créer événement]")),
+                "6": ("Accéder aux ressources (lecture seule)", menu_lecture),
+                "7": ("Voir mes contrats", list_my_contracts_cli ),
             })
 
         elif department == "support":
             actions.update({
                 "1": ("Voir mes événements", lambda: print("[TODO voir mes événements]")),
                 "2": ("Modifier mes événements", lambda: print("[TODO modifier mes événements]")),
-                "3": ("Voir tous les événements", lambda: print("[TODO voir tous événements]")),
+                "3": ("Accéder aux ressources (lecture seule)", menu_lecture),
             })
 
-        print("\n === Menu principal ===")
-        for key, (desc, _) in actions.items():
-            print(f"{key}. {desc}")
+        choix = afficher_menu("MENU PRINCIPAL", actions)
 
-        choix = input("Choix : ")
-        action = actions.get(choix)
+        # Si on a choisi la déconnexion (clé "0")
+        if choix == "0":
+            continue  # retourne au début → recheck get_current_user()
 
-        if action:
-            action[1]()
-        else:
-            print(" Choix invalide.")
+
+def menu_utilisateur():
+    actions = {
+        "1": ("Créer un utilisateur", create_user_cli),
+        "2": ("Modifier un utilisateur", lambda: print("[TODO modifier utilisateur]")),
+        "3": ("Supprimer un utilisateur", lambda: print("[TODO supprimer utilisateur]")),
+        "0": ("Retour", lambda: None)
+    }
+    afficher_menu("GESTION DES UTILISATEURS", actions)
+
+
+def menu_contrat(user, can_create):
+    actions = {
+        "0": ("Retour", lambda: None),
+        "1": ("Modifier un contrat", update_contract_cli),
+    }
+    if can_create:
+        actions["2"] = ("Créer un contrat", create_contract_cli)
+
+    afficher_menu("GESTION DES CONTRATS", actions)
+
+
+def menu_lecture():
+    actions = {
+        "1": ("Voir les clients", list_clients_cli),
+        "2": ("Voir les contrats", list_contracts_cli),
+        "3": ("Voir les événements", lambda: print("[TODO voir événements]")),
+        "0": ("Retour", lambda: None)
+    }
+    afficher_menu("RESSOURCES EN LECTURE SEULE", actions)

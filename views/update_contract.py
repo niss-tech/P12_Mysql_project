@@ -17,7 +17,7 @@ def update_contract_cli():
         is_signed = is_signed_input == "o"
 
         success, message = update_contract(contract_id, total_amount, amount_due, is_signed, user)
-        print("✅ " + message if success else "❌ " + message)
+        print( message if success else message)
 
     except ValueError:
-        print("❌ Entrée invalide.")
+        print("Entrée invalide.")

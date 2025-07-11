@@ -7,17 +7,17 @@ def create_contract(client_email: str, total_amount: float, amount_due: float, i
     session = SessionLocal()
 
     try:
+        if user["department"] != "gestion":
+            return False, "Seuls les membres du département 'gestion' peuvent créer un contrat."
+
         client = session.query(Client).filter_by(email=client_email).first()
 
         if not client:
             return False, "Client non trouvé."
 
-        if client.sales_contact_id != user["id"]:
-            return False, "Vous n’êtes pas le responsable de ce client."
-
         contract = Contract(
             client_id=client.id,
-            sales_contact_id=user["id"],
+            sales_contact_id=client.sales_contact_id,  # association existante
             total_amount=total_amount,
             amount_due=amount_due,
             date_created=date.today(),
@@ -26,7 +26,7 @@ def create_contract(client_email: str, total_amount: float, amount_due: float, i
 
         session.add(contract)
         session.commit()
-        return True, "Contrat enregistré avec succès."
+        return True, "Contrat créé avec succès."
 
     except Exception as e:
         session.rollback()
@@ -67,3 +67,18 @@ def update_contract(contract_id: int, total_amount: float, amount_due: float, is
 
     finally:
         session.close()
+
+def get_all_contracts():
+    session = SessionLocal()
+    try:
+        return session.query(Contract).all()
+    finally:
+        session.close()
+
+
+
+def get_contracts_by_commercial_and_status(user_id, signed, session):
+    query = session.query(Contract).filter_by(sales_contact_id=user_id)
+    if signed is not None:
+        query = query.filter_by(is_signed=signed)
+    return query.all()

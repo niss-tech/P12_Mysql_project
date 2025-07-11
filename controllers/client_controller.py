@@ -2,20 +2,10 @@ from models.client import Client
 from utils.session import SessionLocal
 from datetime import date
 
-def get_clients_by_user(current_user):
+
+def get_all_clients():
     session = SessionLocal()
-
-    if current_user["department"] == "gestion":
-        # Tous les clients
-        clients = session.query(Client).all()
-
-    elif current_user["department"] == "commercial":
-        # Seulement ses propres clients
-        clients = session.query(Client).filter_by(sales_contact_id=current_user["id"]).all()
-
-    else:
-        # Autres départements n'ont pas accès
-        clients = []
+    clients = session.query(Client).all()
 
     client_data = []
     for client in clients:
@@ -28,6 +18,52 @@ def get_clients_by_user(current_user):
 
     session.close()
     return client_data
+
+
+def get_clients_for_commercial(user_id):
+    session = SessionLocal()
+    clients = session.query(Client).filter_by(sales_contact_id=user_id).all()
+
+    client_data = []
+    for client in clients:
+        client_data.append({
+            "id": client.id,
+            "full_name": client.full_name,
+            "email": client.email,
+            "company": client.company_name
+        })
+
+    session.close()
+    return client_data
+
+
+
+# def get_clients_by_user(current_user):
+#     session = SessionLocal()
+
+#     if current_user["department"] == "gestion":
+#         # Tous les clients
+#         clients = session.query(Client).all()
+
+#     elif current_user["department"] == "commercial":
+#         # Seulement ses propres clients
+#         clients = session.query(Client).filter_by(sales_contact_id=current_user["id"]).all()
+
+#     else:
+#         # Autres départements n'ont pas accès
+#         clients = []
+
+#     client_data = []
+#     for client in clients:
+#         client_data.append({
+#             "id": client.id,
+#             "full_name": client.full_name,
+#             "email": client.email,
+#             "company": client.company_name
+#         })
+
+#     session.close()
+#     return client_data
 
 
 

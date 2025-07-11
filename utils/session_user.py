@@ -22,3 +22,12 @@ def logout_user():
         print("Déconnexion réussie.")
     else:
         print("Aucun utilisateur n’était connecté.")
+
+
+def set_current_user(user):
+    # Enregistrer l’utilisateur connecté dans un fichier session
+    os.makedirs("session", exist_ok=True)
+    with open("session/session.json", "w") as f:
+        json.dump(user, f)
+
+

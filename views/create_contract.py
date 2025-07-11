@@ -4,8 +4,8 @@ from controllers.contract_controller import create_contract
 def create_contract_cli():
     user = get_current_user()
 
-    if not user or user["department"] != "commercial":
-        print("Seuls les commerciaux peuvent créer un contrat.")
+    if not user:
+        print("Veuillez vous connecter pour continuer.")
         return
 
     print("=== Création d’un contrat ===")
@@ -18,7 +18,11 @@ def create_contract_cli():
         is_signed = is_signed_input == "o"
 
         success, message = create_contract(client_email, total_amount, amount_due, is_signed, user)
-        print("Le contrat à bien été crée" + message if success else "Erreur " + message)
+
+        if success:
+            print(f"\n {message}")
+        else:
+            print(f"\n {message}")
 
     except ValueError:
-        print("Montant invalide.")
+        print("Montant invalide. Veuillez entrer un nombre.")
