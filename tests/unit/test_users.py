@@ -1,54 +1,38 @@
 from utils.session import SessionLocal
 from models.user import User
-from models.client import Client
-from controllers.client_controller import create_client
+from controllers.user_controller import create_user
 
 
-def test_create_client_success():
+def test_create_user():
     session = SessionLocal()
 
-    # Nttoyage préalable 
-    session.query(Client).filter_by(email="unique@test.com").delete()
-    session.query(User).filter_by(id=42).delete()
+    #Nettoyage préalable si l'utilisateur existe déjà
+    session.query(User).filter_by(email="newuser@test.com").delete()
     session.commit()
 
-    # Ajout de l’utilisateur commercial en base
-    test_user = User(
-        id=42,
-        first_name="Test",
-        last_name="User",
-        email="commercial@test.com",
-        password="1234",
-        department="commercial"
+    #Appel de la fonction à tester
+    result = create_user(
+        first_name="Alice",
+        last_name="Dupont",
+        email="newuser@test.com",
+        password="motdepasse123",
+        department_str="support"
     )
-    session.add(test_user)
-    session.commit()
 
-    #Simuler l'utilisateur connecté
-    user = {
-        "id": 42,
-        "department": "commercial",
-        "email": "commercial@test.com"
-    }
-
-    #Données du client
-    client_data = {
-        "full_name": "Client Unitaire",
-        "email": "unique@test.com",
-        "company_name": "TestCompagnie"
-    }
-
-    #Appel de la fonction
-    result = create_client(client_data, user)
-
-    #Vérifications
+    #Vérifie que le dictionnaire retourné contient les bonnes données
     assert isinstance(result, dict)
-    assert result["email"] == "unique@test.com"
-    assert result["full_name"] == "Client Unitaire"
+    assert result["email"] == "newuser@test.com"
+    assert result["first_name"] == "Alice"
+    assert result["department"] == "support"
 
-    #Nettoyage
-    created = session.query(Client).filter_by(email="unique@test.com").first()
-    session.delete(created)
-    session.delete(test_user)
+    #Vérifie que l'utilisateur existe bien dans la base
+    user_in_db = session.query(User).filter_by(email="newuser@test.com").first()
+    assert user_in_db is not None
+    assert user_in_db.first_name == "Alice"
+
+
+    session.delete(user_in_db)
     session.commit()
     session.close()
+
+
