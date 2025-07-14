@@ -77,3 +77,37 @@ def get_events_by_support_assigned(assigned=True):
         events = session.query(Event).filter(Event.support_contact_id.is_(None)).all()
     session.close()
     return events
+
+
+def get_events_for_support(support_id):
+    session = SessionLocal()
+    events = session.query(Event).filter_by(support_contact_id=support_id).all()
+    session.close()
+    return events
+
+
+def update_event_by_support(support_id, event_id, data):
+    session = SessionLocal()
+    try:
+        event = session.query(Event).filter_by(id=event_id, support_contact_id=support_id).first()
+        if not event:
+            return False, "Événement introuvable ou non autorisé."
+
+        champs_modifiables = [
+            "event_date_start", "event_date_end",
+            "location", "attendees", "notes"
+        ]
+
+        for champ in champs_modifiables:
+            if champ in data and data[champ] is not None:
+                setattr(event, champ, data[champ])
+
+        session.commit()
+        return True, "Événement mis à jour avec succès."
+
+    except Exception as e:
+        session.rollback()
+        return False, f"Erreur : {e}"
+    finally:
+        session.close()
+

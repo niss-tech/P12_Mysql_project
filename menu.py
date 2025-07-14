@@ -12,7 +12,9 @@ from views.delete_user import delete_user_cli
 from views.update_client import update_client_cli
 from views.create_event import create_event_cli 
 from views.assign_support import assign_support_cli
-from views.list_events import list_events_cli, filter_events_by_support_cli
+from views.list_events import list_events_cli, filter_events_by_support_cli, list_my_events_cli
+from views.update_event import update_my_event_cli
+
 
 
 def afficher_menu(titre, actions):
@@ -76,8 +78,8 @@ def menu():
 
         elif department == "support":
             actions.update({
-                "1": ("Voir mes événements", lambda: print("[TODO voir mes événements]")),
-                "2": ("Modifier mes événements", lambda: print("[TODO modifier mes événements]")),
+                "1": ("Voir mes événements", list_my_events_cli),
+                "2": ("Modifier mes événements", update_my_event_cli),
                 "3": ("Accéder aux ressources (lecture seule)", menu_lecture),
             })
 
