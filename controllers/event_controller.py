@@ -1,5 +1,6 @@
 from models.contract import Contract
 from models.event import Event
+from models.user import User
 from utils.session import SessionLocal
 from datetime import datetime
 
@@ -34,5 +35,28 @@ def create_event_for_commercial(user, contract_id, data):
         session.rollback()
         return False, f"Erreur : {e}"
 
+    finally:
+        session.close()
+
+
+
+def assign_support_to_event(event_id, support_id):
+    session = SessionLocal()
+    try:
+        event = session.query(Event).filter_by(id=event_id).first()
+        if not event:
+            return False, "Événement introuvable."
+
+        support_user = session.query(User).filter_by(id=support_id, department="support").first()
+        if not support_user:
+            return False, "Support introuvable ou non valide."
+
+        event.support_contact_id = support_user.id
+        session.commit()
+        return True, f"Support {support_user.first_name} {support_user.last_name} assigné avec succès."
+
+    except Exception as e:
+        session.rollback()
+        return False, f"Erreur : {e}"
     finally:
         session.close()

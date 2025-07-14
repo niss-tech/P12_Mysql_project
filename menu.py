@@ -11,6 +11,7 @@ from views.update_user import update_user_cli
 from views.delete_user import delete_user_cli
 from views.update_client import update_client_cli
 from views.create_event import create_event_cli 
+from views.assign_support import assign_support_cli
 
 def afficher_menu(titre, actions):
     while True:
@@ -56,7 +57,7 @@ def menu():
                 "1": ("Gérer les utilisateurs", menu_utilisateur),
                 "2": ("Gérer les contrats", lambda: menu_contrat(user, can_create=True)),
                 "3": ("Accéder aux ressources", menu_lecture),
-                "4": ("Associer un support à un événement", lambda: print("[TODO associer support]")),
+                "4": ("Associer un support à un événement", assign_support_cli),
             })
 
         elif department == "commercial":
