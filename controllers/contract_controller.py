@@ -45,18 +45,18 @@ def update_contract(contract_id: int, total_amount: float, amount_due: float, is
         if not contract:
             return False, "Contrat non trouvé."
 
-        # Seul un commercial peut modifier son propre contrat
-        if user["department"] == "commercial" and contract.sales_contact_id != user["id"]:
-            return False, "Vous ne pouvez modifier que vos propres contrats."
-
-        # La gestion peut tout modifier
         if user["department"] not in ["commercial", "gestion"]:
             return False, "Vous n'avez pas l'autorisation de modifier les contrats."
 
-        # Mise à jour des données
-        contract.total_amount = total_amount
-        contract.amount_due = amount_due
-        contract.is_signed = is_signed
+        if user["department"] == "commercial" and contract.sales_contact_id != user["id"]:
+            return False, "Vous ne pouvez modifier que vos propres contrats."
+
+        for field, value in {
+            "total_amount": total_amount,
+            "amount_due": amount_due,
+            "is_signed": is_signed
+        }.items():
+            setattr(contract, field, value)
 
         session.commit()
         return True, "Contrat mis à jour avec succès."
@@ -67,6 +67,7 @@ def update_contract(contract_id: int, total_amount: float, amount_due: float, is
 
     finally:
         session.close()
+
 
 def get_all_contracts():
     session = SessionLocal()

@@ -70,14 +70,17 @@ def update_user(user_id, new_first_name=None, new_last_name=None, new_email=None
         if not user:
             return False, "Utilisateur introuvable."
 
-        if new_first_name:
-            user.first_name = new_first_name
-        if new_last_name:
-            user.last_name = new_last_name
-        if new_email:
-            user.email = new_email
-        if new_department:
-            user.department = new_department
+        # Dictionnaire des champs à modifier
+        modifications = {
+            "first_name": new_first_name,
+            "last_name": new_last_name,
+            "email": new_email,
+            "department": new_department
+        }
+
+        for field, value in modifications.items():
+            if value:  # ignore les champs vides ou None
+                setattr(user, field, value)
 
         session.commit()
         return True, "Utilisateur mis à jour avec succès."
@@ -87,6 +90,7 @@ def update_user(user_id, new_first_name=None, new_last_name=None, new_email=None
         return False, f"Erreur : {e}"
     finally:
         session.close()
+
 
 
 def delete_user(user_id):
