@@ -1,6 +1,7 @@
 from models.contract import Contract
 from models.event import Event
 from models.user import User
+from models.client import Client
 from utils.session import SessionLocal
 from datetime import datetime
 
@@ -60,3 +61,19 @@ def assign_support_to_event(event_id, support_id):
         return False, f"Erreur : {e}"
     finally:
         session.close()
+
+
+def get_all_events():
+    session = SessionLocal()
+    events = session.query(Event).all()
+    session.close()
+    return events
+
+def get_events_by_support_assigned(assigned=True):
+    session = SessionLocal()
+    if assigned:
+        events = session.query(Event).filter(Event.support_contact_id.isnot(None)).all()
+    else:
+        events = session.query(Event).filter(Event.support_contact_id.is_(None)).all()
+    session.close()
+    return events

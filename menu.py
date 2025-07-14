@@ -12,6 +12,8 @@ from views.delete_user import delete_user_cli
 from views.update_client import update_client_cli
 from views.create_event import create_event_cli 
 from views.assign_support import assign_support_cli
+from views.list_events import list_events_cli, filter_events_by_support_cli
+
 
 def afficher_menu(titre, actions):
     while True:
@@ -58,6 +60,7 @@ def menu():
                 "2": ("Gérer les contrats", lambda: menu_contrat(user, can_create=True)),
                 "3": ("Accéder aux ressources", menu_lecture),
                 "4": ("Associer un support à un événement", assign_support_cli),
+                "5": ("Filtrer les événements (avec ou sans support)", filter_events_by_support_cli),
             })
 
         elif department == "commercial":
@@ -110,7 +113,7 @@ def menu_lecture():
     actions = {
         "1": ("Voir les clients", list_clients_cli),
         "2": ("Voir les contrats", list_contracts_cli),
-        "3": ("Voir les événements", lambda: print("[TODO voir événements]")),
+        "3": ("Voir les événements", list_events_cli),
         "0": ("Retour", lambda: None)
     }
     afficher_menu("RESSOURCES EN LECTURE SEULE", actions)
