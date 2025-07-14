@@ -9,6 +9,7 @@ from views.list_contracts import list_contracts_cli, list_my_contracts_cli
 from utils.session_user import get_current_user
 from views.update_user import update_user_cli
 from views.delete_user import delete_user_cli
+from views.update_client import update_client_cli
 
 
 def afficher_menu(titre, actions):
@@ -61,7 +62,7 @@ def menu():
         elif department == "commercial":
             actions.update({
                 "1": ("Créer un client", create_client_cli),
-                "2": ("Modifier mes clients", lambda: print("[TODO modifier mes clients]")),
+                "2": ("Modifier mes clients", update_client_cli),
                 "3": ("Voir mes clients", list_my_clients_cli),
                 "4": ("Mettre à jour mes contrats", lambda: menu_contrat(user, can_create=False)),
                 "5": ("Créer un événement", lambda: print("[TODO créer événement]")),
