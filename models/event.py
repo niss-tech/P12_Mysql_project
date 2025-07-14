@@ -8,7 +8,7 @@ class Event(Base):
     id = Column(Integer, primary_key=True)
     client_id = Column(Integer, ForeignKey("client.id"), nullable=False, index=True)
     contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False, index=True)
-    support_contact_id = Column(Integer, ForeignKey("user.id"), nullable=False, index=True)
+    support_contact_id = Column(Integer, ForeignKey("user.id"), nullable=True, index=True)
 
     event_date_start = Column(DateTime, nullable=False)
     event_date_end = Column(DateTime, nullable=False)

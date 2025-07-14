@@ -10,7 +10,7 @@ from utils.session_user import get_current_user
 from views.update_user import update_user_cli
 from views.delete_user import delete_user_cli
 from views.update_client import update_client_cli
-
+from views.create_event import create_event_cli 
 
 def afficher_menu(titre, actions):
     while True:
@@ -65,7 +65,7 @@ def menu():
                 "2": ("Modifier mes clients", update_client_cli),
                 "3": ("Voir mes clients", list_my_clients_cli),
                 "4": ("Mettre à jour mes contrats", lambda: menu_contrat(user, can_create=False)),
-                "5": ("Créer un événement", lambda: print("[TODO créer événement]")),
+                "5": ("Créer un événement", create_event_cli),
                 "6": ("Accéder aux ressources (lecture seule)", menu_lecture),
                 "7": ("Voir mes contrats", list_my_contracts_cli ),
             })
